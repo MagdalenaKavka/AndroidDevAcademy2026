@@ -11,25 +11,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.lazy.items
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.Alignment
-import java.time.LocalDate
-
-var nextId = 6
-val SampleList = mutableStateListOf(
-    Note("1", "Note1", "ABCDEFG", LocalDate.of(2026, 3, 30)),
-    Note("2", "Note2", "1233455678", LocalDate.of(2026, 3, 30)),
-    Note("3", "Note3", "UNIFEST", LocalDate.of(2026, 3, 30)),
-    Note("4", "Note4", "Akademija", LocalDate.of(2026, 3, 30)),
-    Note("5", "Note5", "FERIT", LocalDate.of(2026, 3, 30))
-)
-
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun HomeScreen(
     onItemClick: (Note) -> Unit,
-    onAddClick: () -> Unit
+    onAddClick: () -> Unit,
+    viewModel: ListViewModel = viewModel()
 ) {
+    val notes = viewModel.notes
+
     Column(modifier = Modifier.fillMaxSize()) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -43,7 +35,7 @@ fun HomeScreen(
         }
 
         LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            items(SampleList) { item ->
+            items(notes) { item ->
                 ItemCard(item) { onItemClick(item) }
             }
         }

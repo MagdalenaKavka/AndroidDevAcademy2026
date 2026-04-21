@@ -18,22 +18,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kavkamagdalena.notes.ui.theme.CustomButton
-import com.kavkamagdalena.notes.ui.theme.Note
+import com.kavkamagdalena.notes.ui.theme.DescriptionText
+import com.kavkamagdalena.notes.ui.theme.EditViewModel
 import com.kavkamagdalena.notes.ui.theme.SampleList
-import com.kavkamagdalena.notes.ui.theme.nextId
-import java.time.LocalDate
+import com.kavkamagdalena.notes.ui.theme.TitleText
 
-@Preview(showBackground = true)
-@Composable
-fun NoteScreenPreview() {
-    NoteScreen(ID = null, onBackClick = {})
-}
 
 @Composable
-fun NoteScreen(ID: String?, onBackClick: () -> Unit) {
+fun NoteScreen(
+    ID: String?,
+    onBackClick: () -> Unit,
+    viewModel: EditViewModel = viewModel()
+) {
     val existingNote = if (ID == "new") null else SampleList.find { it.ID == ID }
 
     var title by remember { mutableStateOf(existingNote?.title ?: "") }
@@ -50,7 +49,7 @@ fun NoteScreen(ID: String?, onBackClick: () -> Unit) {
         TextField(
             value = title,
             onValueChange = { title = it },
-            placeholder = { com.kavkamagdalena.notes.ui.theme.TitleText(text = "Title") },
+            placeholder = { TitleText(text = "Title") },
             modifier = Modifier
                 .fillMaxWidth()
                 .border(BorderStroke(1.dp, Color.LightGray), RoundedCornerShape(8.dp)),
@@ -68,7 +67,7 @@ fun NoteScreen(ID: String?, onBackClick: () -> Unit) {
         TextField(
             value = description,
             onValueChange = { description = it },
-            placeholder = { com.kavkamagdalena.notes.ui.theme.DescriptionText(text = "Description") },
+            placeholder = { DescriptionText(text = "Description") },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(200.dp)
@@ -91,27 +90,11 @@ fun NoteScreen(ID: String?, onBackClick: () -> Unit) {
             CustomButton(
                 text = "Done",
                 onClick = {
-                    if (existingNote == null) {
-
-                        SampleList.add(
-                            Note(
-                                ID = nextId.toString(),
-                                title = title,
-                                description = description,
-                                date = LocalDate.now()
-                            )
-                        )
-                        nextId++
-                    } else {
-
-                        val index = SampleList.indexOfFirst { it.ID == existingNote.ID }
-                        if (index != -1) {
-                            SampleList[index] = existingNote.copy(
-                                title = title,
-                                description = description
-                            )
-                        }
-                    }
+                    viewModel.save(
+                        id = existingNote?.ID,
+                        title = title,
+                        description = description
+                    )
                     onBackClick()
                 }
             )
