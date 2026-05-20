@@ -24,13 +24,13 @@ fun TaskListScreen(
     }
 
     var taskToDelete by remember { mutableStateOf<Task?>(null) }
+    val currentSort by viewModel.sortOrder
 
-    // Dialog za brisanje
     if (taskToDelete != null) {
         AlertDialog(
             onDismissRequest = { taskToDelete = null },
             title = { Text("Obriši task") },
-            text = { Text("Jesi li siguran da želiš obrisati '${taskToDelete?.title}'?") },
+            text = { Text("Jesi li sigurna da želiš obrisati '${taskToDelete?.title}'?") },
             confirmButton = {
                 TextButton(onClick = {
                     viewModel.deleteTask(taskToDelete!!.id)
@@ -55,7 +55,30 @@ fun TaskListScreen(
             CustomButton(text = "+", onClick = onAddClick)
         }
 
-        if (viewModel.isLoading) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            FilterChip(
+                selected = currentSort == SortOrder.NONE,
+                onClick = { viewModel.setSort(SortOrder.NONE) },
+                label = { Text("Zadano") }
+            )
+            FilterChip(
+                selected = currentSort == SortOrder.A_TO_Z,
+                onClick = { viewModel.setSort(SortOrder.A_TO_Z) },
+                label = { Text("A → Z") }
+            )
+            FilterChip(
+                selected = currentSort == SortOrder.Z_TO_A,
+                onClick = { viewModel.setSort(SortOrder.Z_TO_A) },
+                label = { Text("Z → A") }
+            )
+        }
+
+        if (viewModel.isLoading.value) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }

@@ -3,9 +3,10 @@ package com.kavkamagdalena.notes.ui.theme
 import androidx.lifecycle.ViewModel
 import java.time.LocalDate
 
-class EditViewModel : ViewModel() {
+class EditViewModel(
+    private val repository: NoteRepository = AppContainer.repository
+) : ViewModel() {
     private val logger = AppContainer.logger
-    private val repository = AppContainer.repository
 
     fun save(id: String?, title: String, description: String) {
         if (id == null) {
