@@ -3,7 +3,6 @@ package com.kavkamagdalena.notes.ui.theme
 import androidx.compose.runtime.mutableStateListOf
 import java.time.LocalDate
 
-
 val SampleList = mutableStateListOf(
     Note("1", "Note1", "ABCDEFG", LocalDate.of(2026, 3, 30)),
     Note("2", "Note2", "1233455678", LocalDate.of(2026, 3, 30)),
@@ -14,16 +13,25 @@ val SampleList = mutableStateListOf(
 
 var nextId = 6
 
-class NoteRepository {
-    fun getAll() = SampleList
+class NoteRepository(private val logger: AppLogger) {
+    fun getAll(): List<Note> {
+        logger.logD("getAll: returning ${SampleList.size} notes")
+        return SampleList
+    }
 
     fun add(note: Note) {
         SampleList.add(note)
         nextId++
+        logger.logI("add: added note ${note.title}")
     }
 
     fun update(note: Note) {
         val index = SampleList.indexOfFirst { it.ID == note.ID }
-        if (index != -1) SampleList[index] = note
+        if (index != -1) {
+            SampleList[index] = note
+            logger.logI("update: updated note ${note.title}")
+        } else {
+            logger.logW("update: note with ID ${note.ID} not found")
+        }
     }
 }

@@ -4,10 +4,12 @@ import androidx.lifecycle.ViewModel
 import java.time.LocalDate
 
 class EditViewModel : ViewModel() {
-    private val repository = NoteRepository()
+    private val logger = AppContainer.logger
+    private val repository = AppContainer.repository
 
     fun save(id: String?, title: String, description: String) {
         if (id == null) {
+            logger.logI("save: creating new note '$title'")
             repository.add(
                 Note(
                     ID = nextId.toString(),
@@ -17,6 +19,7 @@ class EditViewModel : ViewModel() {
                 )
             )
         } else {
+            logger.logI("save: updating note with ID $id")
             repository.update(
                 Note(
                     ID = id,

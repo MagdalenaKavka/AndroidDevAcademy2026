@@ -10,16 +10,37 @@ import androidx.navigation.compose.rememberNavController
 fun Navigation() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "home") {
+    NavHost(navController = navController, startDestination = "login") {
+
+
+        composable("login") {
+            LoginScreen(onLoginSuccess = {
+                navController.navigate("tasks") {
+                    popUpTo("login") { inclusive = true }
+                }
+            })
+        }
+
+        composable("tasks") {
+            TaskListScreen(
+                onTaskClick = { id -> navController.navigate("editTask/$id") },
+                onAddClick = { navController.navigate("editTask/new") }
+            )
+        }
+
+        composable("editTask/{id}") { backStackEntry ->
+            val idStr = backStackEntry.arguments?.getString("id")
+            val id = if (idStr == "new") null else idStr?.toIntOrNull()
+            EditTaskScreen(
+                taskId = id,
+                onBackClick = { navController.popBackStack() }
+            )
+        }
 
         composable("home") {
             HomeScreen(
-                onItemClick = { note ->
-                    navController.navigate("note/${note.ID}")
-                },
-                onAddClick = {
-                    navController.navigate("note/new")
-                }
+                onItemClick = { note -> navController.navigate("note/${note.ID}") },
+                onAddClick = { navController.navigate("note/new") }
             )
         }
 
